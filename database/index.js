@@ -17,8 +17,9 @@ connection.connect((err) => {
 // Your Database Queries Here!!
 
 const getAll = () => {
+  let select = 'SELECT * FROM cowlist';
   return new Promise((resolve, reject) => {
-    connection.query('SELECT * FROM cowlist', (err, cows) => {
+    connection.query(select, (err, cows) => {
       if (err) { reject(err) }
       else { resolve(cows) }
     })
@@ -26,8 +27,9 @@ const getAll = () => {
 };
 
 const create = (cow) => {
+  let create = 'INSERT INTO cowlist(cowname, cowtext) VALUES(?, ?)';
   return new Promise((resolve, reject) => {
-    connection.query('INSERT INTO cowlist(cowname, cowtext) VALUES(?, ?)',
+    connection.query(create,
       [cow.cowname, cow.cowtext], (err, res) => {
         if (err) { reject(err) }
         else { resolve(res) }
@@ -35,13 +37,23 @@ const create = (cow) => {
   })
 };
 
+
+const update = (data) => {
+  let update = 'UPDATE cowlist SET cowname = ?, cowtext = ? WHERE cowname = ?';
+  return new Promise((resolve, reject) => {
+    connection.query(update, [data.newCow.cowname, data.newCow.cowtext, data.oldCow.cowname], (err, res) => {
+      if (err) { reject(err) }
+      else { resolve(res) }
+    })
+  })
+}
+
 const remove = (cow) => {
-
+  // return new Promise((resolve, reject) => {
+  //   connection.query('')
+  // })
 }
 
-const update = (cow) => {
-
-}
 
 // Don't forget to export your functions!
 module.exports = {

@@ -8,10 +8,6 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
-app.get('/', (req, res) => {
-  res.send('Hello from the server!');
-})
-
 app.get('/api/cows', (req, res) => {
   db.get()
     .then(data => res.send(data));
@@ -19,7 +15,12 @@ app.get('/api/cows', (req, res) => {
 
 app.post('/api/cows', (req, res) => {
   db.post(req.body)
-    .then(() => res.status(201).send('Successfully added a cow to the list'))
+    .then(() => res.status(201).send('Successfully added a cow to the list'));
+})
+
+app.patch('/api/cows', (req, res) => {
+  db.patch(req.body)
+    .then(() => res.status(200).send('Cow data updated'));
 })
 
 app.listen(PORT, () => {

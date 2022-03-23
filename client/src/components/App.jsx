@@ -6,8 +6,8 @@ class App extends React.Component {
     super(props);
     this.state = {
       cows: [],
-      cowFormName: null,
-      cowFormText: null
+      currentDisplay: null,
+      clicked: false
     };
   }
 
@@ -21,72 +21,130 @@ class App extends React.Component {
       .catch(err => console.log(err));
   }
 
-  addACow(e) {
-    e.preventDefault();
-    axios.post('api/cows', { cowname: this.state.cowFormName, cowtext: this.state.cowFormText })
-      .then(() => console.log(`Successfully added a cow named ${this.state.cowFormName}`))
+  addCow(event, cow) {
+    event.preventDefault();
+    axios.post('api/cows', cow)
+      .then(() => console.log(`Successfully added a cow named ${cow.cowname}`))
+      .then(() =>
+        this.setState({ clicked: true, currentDisplay: cow }))
       .then(() => this.getAllCows())
       .catch(err => console.log(err));
   }
 
-  onNameChange(name) {
-    this.setState({
-      cowFormName: name
-    });
+  updateCow(event, cow) {
+    event.preventDefault();
+    axios.patch('api/cows', { oldCow: this.state.currentDisplay, newCow: cow})
+      .then(() => this.getAllCows())
+      .then(() => this.setState({currentDisplay: cow}))
+      .catch(err => console.log(err));
   }
 
-  onTextChange(text) {
+  onCowClick(event, cow) {
+    event.preventDefault();
     this.setState({
-      cowFormText: text
-    });
+      currentDisplay: cow,
+      clicked: true
+    })
   }
 
   render() {
     return (
       <div>
         <h1>a list of my favorite cows</h1>
-        <AddCow
-          add={this.addACow.bind(this)}
-          onName={this.onNameChange.bind(this)}
-          onText={this.onTextChange.bind(this)}/>
-        <CowList cows={this.state.cows}/>
+        {this.state.clicked ?
+          <div>
+            <span><CurrentDisplayedCow cow={this.state.currentDisplay} /></span>
+            <span><UpdateCow
+              cow={this.state.currentDisplay}
+              update={this.updateCow.bind(this)}/></span>
+          </div>
+          : null}
+        <br></br>
+        <AddCow add={this.addCow.bind(this)}/>
+        <CowList cows={this.state.cows} clickName={this.onCowClick.bind(this)}/>
       </div>
     );
   }
 };
 
-const AddCow = (props) => (
-  <div>
-    <form onSubmit={props.add}>
-      <input type="text" placeholder="enter a name"
-        onChange={name => props.onName(name.target.value)}/><br></br>
-      <input type="text" placeholder="enter a description"
-        onChange={text => props.onText(text.target.value)}/><br></br>
-      <input type="submit" value="create cow!"/>
-    </form>
-  </div>
-)
+class AddCow extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: null,
+      text: null
+    };
+  }
+
+  render() {
+    return(
+    <div>
+      <form onSubmit={(event) => {
+        this.props.add(event, { cowname:this.state.name, cowtext:this.state.text })}}>
+        <input type="text" placeholder="enter a name"
+          onChange={newName => this.setState({ name: newName.target.value })} /><br></br>
+        <input type="text" placeholder="enter a description"
+          onChange={newText => this.setState({ text: newText.target.value })} /><br></br>
+        <input type="submit" value="create cow!" />
+      </form>
+    </div>
+    )
+  }
+}
+
+class UpdateCow extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: null,
+      text: null
+    }
+  }
+
+  render() {
+    return (
+      <div>
+        <form onSubmit={(event) =>
+          this.props.update(event, { cowname: this.state.name, cowtext: this.state.text })}>
+          <input type="text" placeholder="update name"
+            onChange={ (newName) => this.setState({ name: newName.target.value}) }/> <br></br>
+          <input type="text" placeholder="update description"
+            onChange={ (newText) => this.setState({ text: newText.target.value}) }/> <br></br>
+          <input type="submit" value="update cow!" />
+        </form>
+      </div>
+    )
+  }
+}
+
+function CowEntry(props) {
+  return (
+    <div>
+      <li onClick={(event) => props.click(event, props.cow)}>
+        <span>{props.cow.cowname}</span>
+      </li>
+    </div>
+  )
+}
 
 function CowList(props) {
   return(
     <div>
       <ul>
         {props.cows.map((cow, index) =>
-          <CowEntry cow={cow} key={index}/>)}
+          <CowEntry cow={cow} key={index} click={props.clickName}/>)}
       </ul>
     </div>
   )
 };
 
-function CowEntry(props) {
-  return(
+function CurrentDisplayedCow(props) {
+  return (
     <div>
-      <li>
-        <span>{props.cow.cowname}</span><br></br>
-        <span>{props.cow.cowtext}</span>
-      </li>
+      <span>{props.cow.cowname}</span><br></br>
+      <span>{props.cow.cowtext}</span>
     </div>
   )
-};
+}
 
 export default App;
