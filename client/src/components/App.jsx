@@ -49,10 +49,9 @@ class App extends React.Component {
 
   onCowClick(event, cow) {
     event.preventDefault();
-    this.setState({
-      currentDisplay: cow,
-      clicked: true
-    })
+    if (this.state.currentDisplay === cow) {
+      this.setState({ clicked: false })
+    } else { this.setState({ currentDisplay: cow, clicked: true }) }
   }
 
   render() {
