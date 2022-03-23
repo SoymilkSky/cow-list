@@ -46,13 +46,18 @@ const update = (data) => {
       else { resolve(res) }
     })
   })
-}
+};
 
 const remove = (cow) => {
-  // return new Promise((resolve, reject) => {
-  //   connection.query('')
-  // })
-}
+  let remove = 'DELETE FROM cowlist WHERE cowname = ?';
+  console.log(cow);
+  return new Promise((resolve, reject) => {
+    connection.query(remove, [cow.cowname], (err, res) => {
+      if (err) { reject(err) }
+      else { resolve(res) }
+    })
+  })
+};
 
 
 // Don't forget to export your functions!

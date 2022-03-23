@@ -23,6 +23,11 @@ app.patch('/api/cows', (req, res) => {
     .then(() => res.status(200).send('Cow data updated'));
 })
 
+app.delete('/api/cows', (req, res) => {
+  db.delete(req.body)
+    .then(() => res.status(200).send('Cow deleted'));
+})
+
 app.listen(PORT, () => {
   console.log(`Server listening at localhost:${3000}!`);
 });

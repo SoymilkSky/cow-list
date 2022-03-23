@@ -35,7 +35,15 @@ class App extends React.Component {
     event.preventDefault();
     axios.patch('api/cows', { oldCow: this.state.currentDisplay, newCow: cow})
       .then(() => this.getAllCows())
-      .then(() => this.setState({currentDisplay: cow}))
+      .then(() => this.setState({ currentDisplay: cow }))
+      .catch(err => console.log(err));
+  }
+
+  removeCow(event) {
+    event.preventDefault();
+    axios.delete('api/cows', { data: this.state.currentDisplay })
+      .then(() => this.getAllCows())
+      .then(() => this.setState({ clicked: false, currentDisplay:null }))
       .catch(err => console.log(err));
   }
 
@@ -57,6 +65,7 @@ class App extends React.Component {
             <span><UpdateCow
               cow={this.state.currentDisplay}
               update={this.updateCow.bind(this)}/></span>
+            <span><RemoveCow remove={this.removeCow.bind(this)}/></span>
           </div>
           : null}
         <br></br>
@@ -115,6 +124,14 @@ class UpdateCow extends React.Component {
       </div>
     )
   }
+}
+
+function RemoveCow(props) {
+  return(
+    <div>
+      <input type="submit" value="Delete this cow" onClick={props.remove}/>
+    </div>
+  )
 }
 
 function CowEntry(props) {
