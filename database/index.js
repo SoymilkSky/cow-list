@@ -37,14 +37,15 @@ const create = (cow) => {
   })
 };
 
-
 const update = (data) => {
   let update = 'UPDATE cowlist SET cowname = ?, cowtext = ? WHERE cowname = ?';
   return new Promise((resolve, reject) => {
-    connection.query(update, [data.newCow.cowname, data.newCow.cowtext, data.oldCow.cowname], (err, res) => {
-      if (err) { reject(err) }
-      else { resolve(res) }
-    })
+    connection.query(update,
+      [data.newCow.cowname, data.newCow.cowtext, data.oldCow.cowname],
+      (err, res) => {
+        if (err) { reject(err) }
+        else { resolve(res) }
+      })
   })
 };
 
@@ -58,7 +59,6 @@ const remove = (cow) => {
     })
   })
 };
-
 
 // Don't forget to export your functions!
 module.exports = {
